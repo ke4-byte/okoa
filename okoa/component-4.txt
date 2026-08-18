@@ -1,0 +1,16 @@
+
+## Tech Stack
+
+- **Backend**: Node.js with Express
+- **Frontend**: HTML, CSS, JavaScript
+- **Charts**: Chart.js
+- **Storage**: In-memory (replace with MongoDB/PostgreSQL for production)
+
+## Production Notes
+
+For production deployment:
+1. Replace in-memory storage with a database (MongoDB, PostgreSQL, etc.)
+2. Add authentication for admin users
+3. Implement proper M-Pesa API integration (Daraja API)
+4. Add SSL/HTTPS
+5. Deploy to a cloud platform (Heroku, AWS, DigitalOcean, etc.)

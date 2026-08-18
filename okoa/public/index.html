@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OKOA - Donation Platform</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 50%, #fef3c7 100%);
+            min-height: 100vh;
+            color: #1a202c;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #065f46 0%, #047857 50%, #059669 100%);
+            color: white;
+            padding: 1.5rem 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo-icon {
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .logo h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .logo p {
+            font-size: 0.875rem;
+            color: #a7f3d0;
+        }
+
+        .mpesa-badge {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e5e7eb;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #065f46;
+            margin-bottom: 1rem;
+            font-family: Georgia, serif;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-box {
+            background: #f0fdf4;
+            border-radius: 12px;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .stat-box.amber {
+            background: #fffbeb;
+        }
+
+        .stat-box.blue {
+            background: #eff6ff;
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: #065f46;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #065f46;
+        }
+
+        .chart-container {
+            height: 300px;
+            margin-bottom: 1.5rem;
+        }
+
+        .donation-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-group label {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #374151;
+        }
+
+        .form-group input,
+        .form-group select {
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #059669;
+            box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.1);
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: #059669;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #047857;
+            transform: translateY(-1px);
+        }
+
+        .btn-whatsapp {
+            background: #25D366;
+            color: white;
+            text-decoration: none;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-whatsapp:hover {
+            background: #1DA851;
+            transform: translateY(-1px);
+        }
+
+        .mpesa-info {
+            background: #f0fdf4;
+            border-radius: 12px;
+            padding: 1rem;
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .mpesa-number {
+            font-family: 'Courier New', monospace;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #065f46;
+        }
+
+        .donation-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .donation-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .donation-item:last-child {
+            border-bottom: none;
+        }
+
+        .donation-name {
+            font-weight: 500;
+            color: #1a202c;
+        }
+
+        .donation-date {
+            font-size: 0.75rem;
+            color: #6b7280;
+        }
+
+        .donation-amount {
+            font-weight: 700;
+            color: #059669;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .badge-general { background: #d1fae5; color: #065f46; }
+        .badge-education { background: #dbeafe; color: #1e40af; }
+        .badge-healthcare { background: #fee2e2; color: #991b1b; }
+        .badge-food { background: #fef3c7; color: #92400e; }
+        .badge-shelter { background: #f3e8ff; color: #6b21a8; }
+
+        .footer {
+            background: #064e3b;
+            color: white;
+            padding: 2rem;
+            margin-top: 2rem;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+        }
+
+        .footer h3 {
+            color: #a7f3d0;
+            margin-bottom: 0.5rem;
+        }
+
+        .footer a {
+            color: white;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            color: #a7f3d0;
+        }
+
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #059669;
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: none;
+            animation: slideIn 0.3s ease;
+            z-index: 1000;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+                padding: 1rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .footer-content {
+                grid-template-columns: 1fr;
+            }
+
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="toast" id="toast"></div>
+
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <div class="logo-icon">❤️</div>
+                <div>
+                    <h1>OKOA</h1>
+                    <p>Transforming Lives Through Generosity</p>
+                </div>
+            </div>
+            <div class="mpesa-badge">
+                M-Pesa: +254 713 370 833
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="main-content">
+            <div class="card">
+                <h2 class="card-title">Donation Distribution</h2>
+                <div class="stats-grid">
+                    <div class="stat-box">
+                        <div class="stat-label">Total Raised</div>
+                        <div class="stat-value" id="totalRaised">KES 0</div>
+                    </div>
+                    <div class="stat-box amber">
+                        <div class="stat-label">Total Donations</div>
+                        <div class="stat-value" id="totalDonations">0</div>
+                    </div>
+                    <div class="stat-box blue">
+                        <div class="stat-label">Average Donation</div>
+                        <div class="stat-value" id="averageDonation">KES 0</div>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="donationChart"></canvas>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2 class="card-title">Recent Donations</h2>
+                <div class="donation-list" id="donationList">
+                    <p style="color: #6b7280; text-align: center; padding: 2rem;">Loading donations...</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="sidebar">
+            <div class="card">
+                <h2 class="card-title">Make a Donation</h2>
+                <div class="mpesa-info">
+                    <p style="color: #065f46; font-size: 0.875rem;">M-Pesa Paybill/Till Number</p>
+                    <div class="mpesa-number">+254 713 370 833</div>
+                </div>
+                
+                <form class="donation-form" id="donationForm">
+                    <div class="form-group">
+                        <label for="name">Your Name</label>
+                        <input type="text" id="name" placeholder="Enter your name">
+                    </div>
+                    <div class="form-group">
+                        <label for="amount">Amount (KES)</label>
+                        <input type="number" id="amount" placeholder="e.g. 500" required min="1">
+                    </div>
+                    <div class="form-group">
+                        <label for="category">Donation Category</label>
+                        <select id="category">
+                            <option value="General">General Fund</option>
+                            <option value="Education">Education</option>
+                            <option value="Healthcare">Healthcare</option>
+                            <option value="Food">Food & Nutrition</option>
+                            <option value="Shelter">Shelter</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">Your Phone Number (optional)</label>
+                        <input type="tel" id="phone" placeholder="+254...">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Confirm Donation</button>
+                </form>
+
+                <a href="https://wa.me/254713370833?text=Hello%20OKOA!%20I%20would%20like%20to%20make%20a%20donation." 
+                   target="_blank" 
+                   class="btn btn-whatsapp" 
+                   style="margin-top: 1rem;">
+                    💬 Chat with us on WhatsApp
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div>
+                <h3>❤️ OKOA</h3>
+                <p style="color: #a7f3d0; font-size: 0.875rem;">Empowering communities through sustainable giving and support.</p>
+            </div>
+            <div>
+                <h3>Contact Us</h3>
+                <p style="font-size: 0.875rem;">📞 +254 713 370 833</p>
+                <a href="https://wa.me/254713370833" target="_blank" style="font-size: 0.875rem;">💬 WhatsApp Us</a>
+            </div>
+            <div>
+                <h3>M-Pesa Details</h3>
+                <div style="background: rgba(255,255,255,0.1); padding: 0.75rem; border-radius: 8px; font-size: 0.875rem;">
+                    <p>Send donations to:</p>
+                    <p style="font-family: 'Courier New', monospace; font-weight: bold; margin-top: 0.25rem;">+254 713 370 833</p>
+                </div>
+            </div>
+        </div>
+        <div style="text-align: center; margin-top: 2rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.1); font-size: 0.875rem; color: #a7f3d0;">
+            © 2024 OKOA. All rights reserved.
+        </div>
+    </footer>
+
+    <script>
+        let donationChart = null;
+
+        // Initialize the app
+        async function init() {
+            await loadDonations();
+            await loadStats();
+        }
+
+        // Load donations from API
+        async function loadDonations() {
+            try {
+                const response = await fetch('/api/donations');
+                const donations = await response.json();
+                renderDonationList(donations);
+            } catch (error) {
+                console.error('Error loading donations:', error);
+            }
+        }
+
+        // Load stats and update chart
+        async function loadStats() {
+            try {
+                const response = await fetch('/api/stats');
+                const stats = await response.json();
+                
+                document.getElementById('totalRaised').textContent = `KES ${stats.total.toLocaleString()}`;
+                document.getElementById('totalDonations').textContent = stats.count;
+                document.getElementById('averageDonation').textContent = `KES ${stats.average.toLocaleString()}`;
+                
+                updateChart(stats.categories);
+            } catch (error) {
+                console.error('Error loading stats:', error);
+            }
+        }
+
+        // Update the pie chart
+        function updateChart(categories) {
+            const ctx = document.getElementById('donationChart').getContext('2d');
+            
+            const colors = {
+                'General': '#059669',
+                'Education': '#3b82f6',
+                'Healthcare': '#ef4444',
+                'Food': '#f59e0b',
+                'Shelter': '#8b5cf6'
+            };
+
+            const data = Object.entries(categories).map(([name, value]) => ({
+                label: name,
+                value: value,
+                color: colors[name] || '#6b7280'
+            }));
+
+            if (donationChart) {
+                donationChart.destroy();
+            }
+
+            donationChart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: data.map(d => d.label),
+                    datasets: [{
+                        data: data.map(d => d.value),
+                        backgroundColor: data.map(d => d.color),
+                        borderWidth: 2,
+                        borderColor: '#ffffff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                usePointStyle: true
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = Math.round((context.parsed / total) * 100);
+                                    return ` ${context.label}: KES ${context.parsed.toLocaleString()} (${percentage}%)`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Render donation list
+        function renderDonationList(donations) {
+            const list = document.getElementById('donationList');
+            
+            if (donations.length === 0) {
+                list.innerHTML = '<p style="color: #6b7280; text-align: center; padding: 2rem;">No donations yet. Be the first to give!</p>';
+                return;
+            }
+
+            list.innerHTML = donations.slice(0, 10).map(donation => {
+                const date = new Date(donation.date).toLocaleDateString('en-KE', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric'
+                });
+                
+                const badgeClass = `badge-${donation.category.toLowerCase()}`;
+                
+                return `
+                    <div class="donation-item">
+                        <div>
+                            <div class="donation-name">${donation.name}</div>
+                            <div class="donation-date">${date}</div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 0.75rem;">
+                            <span class="badge ${badgeClass}">${donation.category}</span>
+                            <span class="donation-amount">KES ${donation.amount.toLocaleString()}</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Handle form submission
+        document.getElementById('donationForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = {
+                name: document.getElementById('name').value,
+                amount: document.getElementById('amount').value,
+                category: document.getElementById('category').value,
+                phone: document.getElementById('phone').value
+            };
+
+            try {
+                const response = await fetch('/api/donations', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                if (response.ok) {
+                    showToast('🎉 Thank you for your donation!');
+                    document.getElementById('donationForm').reset();
+                    await loadDonations();
+                    await loadStats();
+                } else {
+                    const error = await response.json();
+                    showToast('❌ ' + error.error, true);
+                }
+            } catch (error) {
+                console.error('Error submitting donation:', error);
+                showToast('❌ Error submitting donation', true);
+            }
+        });
+
+        // Show toast notification
+        function showToast(message, isError = false) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.style.background = isError ? '#dc2626' : '#059669';
+            toast.style.display = 'block';
+            
+            setTimeout(() => {
+                toast.style.display = 'none';
+            }, 3000);
+        }
+
+        // Initialize the app
+        init();
+    </script>
+</body>
+</html>

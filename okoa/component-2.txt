@@ -1,0 +1,7 @@
+
+### GET /api/stats
+Returns donation statistics including total, count, average, and category breakdown
+
+## Development
+
+For development with auto-reload:
